@@ -12,7 +12,7 @@
         int taskCount = 0;
         int doneCount = 0;
 
-        // load open tasks from file
+        
         if (File.Exists(takenBestand))
         {
             string[] lines = File.ReadAllLines(takenBestand);
@@ -25,7 +25,7 @@
             }
         }
 
-        // load completed tasks from file
+        
         if (File.Exists(voltooidBestand))
         {
             string[] lines = File.ReadAllLines(voltooidBestand);
@@ -46,7 +46,7 @@
             Console.WriteLine("=== TASK MANAGER ===");
             Console.WriteLine();
 
-            // show open tasks
+         
             Console.WriteLine("Open tasks:");
             for (int i = 0; i < taskCount; i++)
             {
@@ -61,7 +61,7 @@
 
             Console.WriteLine();
 
-            // show completed tasks
+            
             Console.WriteLine("Completed tasks:");
             for (int i = 0; i < taskCount; i++)
             {
@@ -76,7 +76,7 @@
 
             if (choice == "t")
             {
-                // ask for task name
+                
                 string name = "";
                 while (true)
                 {
@@ -88,20 +88,20 @@
                         break;
                 }
 
-                // ask for deadline
+                
                 Console.Write("Deadline (dd/mm/yyyy, leave empty = no deadline): ");
                 string dlInput = Console.ReadLine().Trim();
                 string dl = null;
                 if (dlInput != "")
                     dl = dlInput;
 
-                // save the task in the arrays
+                
                 taskNames[taskCount] = name;
                 deadlines[taskCount] = dl;
                 isDone[taskCount] = false;
                 taskCount++;
 
-                // save to file
+                
                 using (StreamWriter sw = new StreamWriter(takenBestand, false))
                 {
                     for (int i = 0; i < taskCount; i++)
@@ -116,7 +116,7 @@
             }
             else if (choice == "v")
             {
-                // ask which task to mark as done
+                
                 Console.Write("Enter the number of the task: ");
                 string numInput = Console.ReadLine();
 
@@ -124,11 +124,11 @@
                 {
                     if (index >= 0 && index < taskCount && !isDone[index])
                     {
-                        // mark as done with todays date
+                        
                         isDone[index] = true;
                         doneDates[index] = DateTime.Today.ToString("yyyy-MM-dd");
 
-                        // save open tasks to file
+                        
                         using (StreamWriter sw = new StreamWriter(takenBestand, false))
                         {
                             for (int i = 0; i < taskCount; i++)
@@ -138,7 +138,7 @@
                             }
                         }
 
-                        // save completed tasks to file
+                        
                         using (StreamWriter sw = new StreamWriter(voltooidBestand, false))
                         {
                             for (int i = 0; i < taskCount; i++)
@@ -164,7 +164,62 @@
             }
             else if (choice == "d")
             {
-                Console.WriteLine("todo");
+                
+                Console.Write("Enter the number of the task to delete: ");
+                string numInput = Console.ReadLine();
+
+                if (int.TryParse(numInput, out int index))
+                {
+                    if (index >= 0 && index < taskCount)
+                    {
+                        
+                        for (int i = index; i < taskCount - 1; i++)
+                        {
+                            taskNames[i] = taskNames[i + 1];
+                            deadlines[i] = deadlines[i + 1];
+                            doneDates[i] = doneDates[i + 1];
+                            isDone[i] = isDone[i + 1];
+                        }
+
+                        
+                        taskNames[taskCount - 1] = null;
+                        deadlines[taskCount - 1] = null;
+                        doneDates[taskCount - 1] = null;
+                        isDone[taskCount - 1] = false;
+                        taskCount--;
+
+                        
+                        using (StreamWriter sw = new StreamWriter(takenBestand, false))
+                        {
+                            for (int i = 0; i < taskCount; i++)
+                            {
+                                if (!isDone[i])
+                                    sw.WriteLine($"{taskNames[i]};{deadlines[i] ?? ""}");
+                            }
+                        }
+
+                        
+                        using (StreamWriter sw = new StreamWriter(voltooidBestand, false))
+                        {
+                            for (int i = 0; i < taskCount; i++)
+                            {
+                                if (isDone[i])
+                                    sw.WriteLine($"{taskNames[i]};{deadlines[i] ?? ""};{doneDates[i]}");
+                            }
+                        }
+
+                        Console.WriteLine("Task deleted! Press Enter to continue.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid number. Press Enter to continue.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("That is not a number. Press Enter to continue.");
+                }
+
                 Console.ReadLine();
             }
             else if (choice == "s")
