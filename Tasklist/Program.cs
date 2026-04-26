@@ -1,39 +1,43 @@
-﻿class Program
+﻿
+internal class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
+        const string takenBestand = "taken.txt";
+        const string voltooidBestand = "voltooid.txt";
+
         string[] taskNames = new string[100];
         string[] deadlines = new string[100];
-        bool[] isDone = new bool[100];
         string[] doneDates = new string[100];
+        bool[] isDone = new bool[100];
         int taskCount = 0;
+        int doneCount = 0;
 
-        while (true)
+       
+        if (File.Exists(takenBestand))
         {
-            Console.Clear();
-            Console.WriteLine("=== TASK MANAGER ===");
-            Console.WriteLine();
-            Console.WriteLine("1. Add task");
-            Console.WriteLine("2. Mark task as done");
-            Console.WriteLine("3. Delete task");
-            Console.WriteLine("4. Exit");
-            Console.Write("\nChoice: ");
-
-            string input = Console.ReadLine();
-
-            if (input == "1")
-                Console.WriteLine("todo: add task");
-            else if (input == "2")
-                Console.WriteLine("todo: mark done");
-            else if (input == "3")
-                Console.WriteLine("todo: delete task");
-            else if (input == "4")
-                return;
-            else
-                Console.WriteLine("Wrong input, try again.");
-
-            Console.ReadLine();
+            string[] lines = File.ReadAllLines(takenBestand);
+            foreach (string line in lines)
+            {
+                string[] parts = line.Split(';');
+                taskNames[taskCount] = parts[0];
+                deadlines[taskCount] = parts[1] == "" ? null : parts[1];
+                taskCount++;
+            }
         }
 
+        if (File.Exists(voltooidBestand))
+        {
+            string[] lines = File.ReadAllLines(voltooidBestand);
+            foreach (string line in lines)
+            {
+                string[] parts = line.Split(';');
+                taskNames[taskCount] = parts[0];
+                deadlines[taskCount] = parts[1] == "" ? null : parts[1];
+                doneDates[taskCount] = parts[2];
+                isDone[taskCount] = true;
+                taskCount++;
+            }
+        }
     }
 }
