@@ -79,7 +79,45 @@
             string choice = Console.ReadLine();
 
             if (choice == "1")
-                Console.WriteLine("todo");
+            {
+                // ask for task name
+                string name = "";
+                while (true)
+                {
+                    Console.Write("Task description (max 30 chars): ");
+                    name = Console.ReadLine();
+                    if (name.Length == 0 || name.Length > 30)
+                        Console.WriteLine("Invalid! Must be between 1 and 30 characters.");
+                    else
+                        break;
+                }
+
+                // ask for deadline
+                Console.Write("Deadline (dd/mm/yyyy, leave empty = no deadline): ");
+                string dlInput = Console.ReadLine().Trim();
+                string dl = null;
+                if (dlInput != "")
+                    dl = dlInput;
+
+                // save the task in the arrays
+                taskNames[taskCount] = name;
+                deadlines[taskCount] = dl;
+                isDone[taskCount] = false;
+                taskCount++;
+
+                // save to file
+                using (StreamWriter sw = new StreamWriter(takenBestand, false))
+                {
+                    for (int i = 0; i < taskCount; i++)
+                    {
+                        if (!isDone[i])
+                            sw.WriteLine($"{taskNames[i]};{deadlines[i] ?? ""}");
+                    }
+                }
+
+                Console.WriteLine("Task added! Press Enter to continue.");
+                Console.ReadLine();
+            }
             else if (choice == "2")
                 Console.WriteLine("todo");
             else if (choice == "3")
