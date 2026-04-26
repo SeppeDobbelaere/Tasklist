@@ -70,15 +70,11 @@
             }
 
             Console.WriteLine();
-            Console.WriteLine("1. Add task");
-            Console.WriteLine("2. Mark task as done");
-            Console.WriteLine("3. Delete task");
-            Console.WriteLine("4. Exit");
-            Console.Write("\nChoice: ");
+            Console.Write("Actions: [T]oevoegen / [V]oltooien / [D]efinitief verwijderen / [S]toppen: ");
 
-            string choice = Console.ReadLine();
+            string choice = Console.ReadLine().ToLower();
 
-            if (choice == "1")
+            if (choice == "t")
             {
                 // ask for task name
                 string name = "";
@@ -118,16 +114,66 @@
                 Console.WriteLine("Task added! Press Enter to continue.");
                 Console.ReadLine();
             }
-            else if (choice == "2")
+            else if (choice == "v")
+            {
+                // ask which task to mark as done
+                Console.Write("Enter the number of the task: ");
+                string numInput = Console.ReadLine();
+
+                if (int.TryParse(numInput, out int index))
+                {
+                    if (index >= 0 && index < taskCount && !isDone[index])
+                    {
+                        // mark as done with todays date
+                        isDone[index] = true;
+                        doneDates[index] = DateTime.Today.ToString("yyyy-MM-dd");
+
+                        // save open tasks to file
+                        using (StreamWriter sw = new StreamWriter(takenBestand, false))
+                        {
+                            for (int i = 0; i < taskCount; i++)
+                            {
+                                if (!isDone[i])
+                                    sw.WriteLine($"{taskNames[i]};{deadlines[i] ?? ""}");
+                            }
+                        }
+
+                        // save completed tasks to file
+                        using (StreamWriter sw = new StreamWriter(voltooidBestand, false))
+                        {
+                            for (int i = 0; i < taskCount; i++)
+                            {
+                                if (isDone[i])
+                                    sw.WriteLine($"{taskNames[i]};{deadlines[i] ?? ""};{doneDates[i]}");
+                            }
+                        }
+
+                        Console.WriteLine("Task marked as done! Press Enter to continue.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid number. Press Enter to continue.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("That is not a number. Press Enter to continue.");
+                }
+
+                Console.ReadLine();
+            }
+            else if (choice == "d")
+            {
                 Console.WriteLine("todo");
-            else if (choice == "3")
-                Console.WriteLine("todo");
-            else if (choice == "4")
+                Console.ReadLine();
+            }
+            else if (choice == "s")
                 break;
             else
-                Console.WriteLine("Wrong input!");
-
-            Console.ReadLine();
+            {
+                Console.WriteLine("Wrong input! Press Enter to continue.");
+                Console.ReadLine();
+            }
         }
     }
 }
